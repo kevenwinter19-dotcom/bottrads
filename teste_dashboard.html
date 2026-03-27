@@ -1,0 +1,982 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BOT ULTRA — Painel</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #07080d;
+  --s1: #0d0f18;
+  --s2: #12141f;
+  --s3: #181b28;
+  --border: #1e2235;
+  --border2: #252840;
+  --green: #00e5a0;
+  --green2: #00b87a;
+  --red: #ff4560;
+  --blue: #3d8bff;
+  --amber: #ffb547;
+  --purple: #9b6dff;
+  --text: #dde1f0;
+  --muted: #4a5070;
+  --mono: 'DM Mono', monospace;
+  --sans: 'Outfit', sans-serif;
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+html { scroll-behavior: smooth; }
+
+body {
+background: var(–bg);
+color: var(–text);
+font-family: var(–sans);
+min-height: 100vh;
+overflow-x: hidden;
+}
+
+/* Background mesh */
+body::before {
+content: ‘’;
+position: fixed; inset: 0; pointer-events: none; z-index: 0;
+background:
+radial-gradient(ellipse 60% 40% at 10% 20%, rgba(0,229,160,0.04) 0%, transparent 70%),
+radial-gradient(ellipse 50% 50% at 90% 80%, rgba(61,139,255,0.04) 0%, transparent 70%);
+}
+
+.app { position: relative; z-index: 1; max-width: 480px; margin: 0 auto; padding: 0 0 80px; }
+
+/* ── HEADER ── */
+header {
+position: sticky; top: 0; z-index: 100;
+background: rgba(7,8,13,0.92);
+backdrop-filter: blur(20px);
+border-bottom: 1px solid var(–border);
+padding: 14px 20px;
+display: flex; align-items: center; justify-content: space-between;
+}
+.logo {
+font-family: var(–mono); font-size: 15px; font-weight: 500;
+color: var(–green); letter-spacing: 1px;
+}
+.logo span { color: var(–muted); }
+.bot-status {
+display: flex; align-items: center; gap: 8px;
+font-family: var(–mono); font-size: 11px;
+}
+.status-dot {
+width: 8px; height: 8px; border-radius: 50%;
+background: var(–green);
+box-shadow: 0 0 8px var(–green);
+animation: blink 2s infinite;
+}
+.status-dot.off { background: var(–red); box-shadow: 0 0 8px var(–red); animation: none; }
+@keyframes blink {
+0%,100%{opacity:1} 50%{opacity:0.4}
+}
+
+/* ── NAV TABS ── */
+.tabs {
+display: flex; gap: 0;
+background: var(–s1);
+border-bottom: 1px solid var(–border);
+overflow-x: auto; scrollbar-width: none;
+}
+.tabs::-webkit-scrollbar { display: none; }
+.tab {
+flex: 1; padding: 12px 8px;
+font-size: 12px; font-weight: 600;
+color: var(–muted);
+background: none; border: none; cursor: pointer;
+border-bottom: 2px solid transparent;
+transition: all 0.2s; white-space: nowrap;
+font-family: var(–sans);
+}
+.tab.active { color: var(–green); border-bottom-color: var(–green); }
+.tab:hover:not(.active) { color: var(–text); }
+
+/* ── SECTIONS ── */
+.section { display: none; padding: 16px; }
+.section.active { display: block; }
+
+/* ── CARDS ── */
+.card {
+background: var(–s1);
+border: 1px solid var(–border);
+border-radius: 16px;
+padding: 16px;
+margin-bottom: 12px;
+}
+.card-title {
+font-family: var(–mono); font-size: 10px;
+color: var(–muted); text-transform: uppercase;
+letter-spacing: 2px; margin-bottom: 12px;
+display: flex; align-items: center; gap: 8px;
+}
+.card-title::after {
+content: ‘’; flex: 1; height: 1px; background: var(–border);
+}
+
+/* ── STAT GRID ── */
+.stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 12px; }
+.stat {
+background: var(–s2); border: 1px solid var(–border);
+border-radius: 12px; padding: 12px;
+}
+.stat-label { font-size: 10px; color: var(–muted); font-family: var(–mono); margin-bottom: 4px; }
+.stat-val { font-family: var(–mono); font-size: 22px; font-weight: 500; }
+.stat-val.green { color: var(–green); }
+.stat-val.red   { color: var(–red); }
+.stat-val.blue  { color: var(–blue); }
+.stat-val.amber { color: var(–amber); }
+.stat-sub { font-size: 10px; color: var(–muted); margin-top: 2px; }
+
+/* ── TOGGLE SWITCH ── */
+.toggle-wrap {
+display: flex; align-items: center; justify-content: space-between;
+padding: 14px 16px;
+background: var(–s2); border: 1px solid var(–border);
+border-radius: 12px; margin-bottom: 8px;
+transition: border-color 0.2s;
+}
+.toggle-wrap.active-pair { border-color: rgba(0,229,160,0.3); }
+.toggle-left { display: flex; align-items: center; gap: 12px; }
+.pair-icon {
+width: 36px; height: 36px; border-radius: 10px;
+background: var(–s3); display: flex; align-items: center; justify-content: center;
+font-size: 16px;
+}
+.pair-name { font-weight: 600; font-size: 14px; }
+.pair-price { font-family: var(–mono); font-size: 11px; color: var(–muted); margin-top: 2px; }
+.pair-score {
+font-family: var(–mono); font-size: 10px;
+padding: 2px 7px; border-radius: 4px; margin-top: 3px;
+display: inline-block;
+}
+.pair-score.bull { background: rgba(0,229,160,0.1); color: var(–green); }
+.pair-score.bear { background: rgba(255,69,96,0.1); color: var(–red); }
+.pair-score.neut { background: var(–s3); color: var(–muted); }
+
+/* Toggle */
+.toggle {
+position: relative; width: 44px; height: 24px;
+background: var(–border2); border-radius: 100px;
+cursor: pointer; transition: background 0.3s;
+flex-shrink: 0;
+}
+.toggle.on { background: var(–green2); }
+.toggle::after {
+content: ‘’; position: absolute;
+width: 18px; height: 18px; border-radius: 50%;
+background: #fff; top: 3px; left: 3px;
+transition: transform 0.3s;
+}
+.toggle.on::after { transform: translateX(20px); }
+
+/* ── NEWS CARDS ── */
+.news-card {
+background: var(–s2); border: 1px solid var(–border);
+border-radius: 12px; padding: 12px; margin-bottom: 8px;
+transition: border-color 0.2s;
+}
+.news-card:hover { border-color: var(–border2); }
+.news-header { display: flex; align-items: flex-start; gap: 10px; }
+.news-sentiment {
+width: 32px; height: 32px; border-radius: 8px;
+display: flex; align-items: center; justify-content: center;
+font-size: 14px; flex-shrink: 0;
+}
+.news-sentiment.bull { background: rgba(0,229,160,0.1); }
+.news-sentiment.bear { background: rgba(255,69,96,0.1); }
+.news-sentiment.neut { background: var(–s3); }
+.news-title { font-size: 13px; font-weight: 400; line-height: 1.4; flex: 1; }
+.news-meta {
+display: flex; gap: 8px; margin-top: 8px; align-items: center;
+flex-wrap: wrap;
+}
+.news-source {
+font-family: var(–mono); font-size: 10px;
+background: var(–s3); padding: 2px 8px; border-radius: 4px; color: var(–muted);
+}
+.news-time { font-family: var(–mono); font-size: 10px; color: var(–muted); }
+.news-score {
+font-family: var(–mono); font-size: 10px;
+padding: 2px 8px; border-radius: 4px; margin-left: auto;
+}
+.news-score.bull { background: rgba(0,229,160,0.1); color: var(–green); }
+.news-score.bear { background: rgba(255,69,96,0.1); color: var(–red); }
+.news-score.neut { background: var(–s3); color: var(–muted); }
+.news-ai {
+margin-top: 10px; padding: 10px;
+background: rgba(61,139,255,0.05);
+border: 1px solid rgba(61,139,255,0.15);
+border-radius: 8px;
+font-size: 12px; color: #8ab4ff; line-height: 1.6;
+display: none;
+}
+.news-ai.show { display: block; }
+.news-ai-btn {
+font-family: var(–mono); font-size: 10px;
+background: none; border: 1px solid var(–border2);
+color: var(–blue); padding: 4px 10px; border-radius: 6px;
+cursor: pointer; margin-top: 8px;
+transition: all 0.2s;
+}
+.news-ai-btn:hover { background: rgba(61,139,255,0.1); }
+
+/* ── ADMIN INPUTS ── */
+.input-group { margin-bottom: 12px; }
+.input-label {
+font-family: var(–mono); font-size: 11px; color: var(–muted);
+margin-bottom: 6px; display: block;
+}
+.input-field {
+width: 100%; padding: 12px 14px;
+background: var(–s2); border: 1px solid var(–border);
+border-radius: 10px; color: var(–text);
+font-family: var(–mono); font-size: 13px;
+transition: border-color 0.2s; outline: none;
+}
+.input-field:focus { border-color: var(–green); }
+.input-field::placeholder { color: var(–muted); }
+.input-field.password { letter-spacing: 2px; }
+
+.input-row { display: flex; gap: 8px; }
+.input-row .input-group { flex: 1; }
+
+/* ── BUTTONS ── */
+.btn {
+width: 100%; padding: 14px;
+border-radius: 12px; border: none;
+font-family: var(–sans); font-weight: 700; font-size: 14px;
+cursor: pointer; transition: all 0.2s;
+}
+.btn-primary { background: var(–green); color: #000; }
+.btn-primary:hover { background: #00ffb3; transform: translateY(-1px); }
+.btn-danger { background: rgba(255,69,96,0.15); color: var(–red); border: 1px solid rgba(255,69,96,0.3); }
+.btn-danger:hover { background: rgba(255,69,96,0.25); }
+.btn-secondary {
+background: var(–s2); color: var(–text);
+border: 1px solid var(–border);
+}
+.btn-secondary:hover { border-color: var(–border2); }
+
+.btn-sm {
+padding: 8px 16px; border-radius: 8px;
+font-size: 12px; font-weight: 600;
+cursor: pointer; border: none; font-family: var(–sans);
+}
+
+/* ── LOG ── */
+.log-box {
+background: #040508; border: 1px solid var(–border);
+border-radius: 10px; padding: 12px;
+max-height: 200px; overflow-y: auto;
+font-family: var(–mono); font-size: 11px;
+}
+.log-line { padding: 3px 0; line-height: 1.5; }
+.log-line .ts { color: var(–muted); margin-right: 8px; }
+.c-green { color: var(–green); }
+.c-red   { color: var(–red); }
+.c-blue  { color: var(–blue); }
+.c-amber { color: var(–amber); }
+.c-muted { color: var(–muted); }
+
+/* ── POSITIONS ── */
+.pos-card {
+background: var(–s2); border-radius: 12px;
+border-left: 3px solid var(–green);
+padding: 12px; margin-bottom: 8px;
+}
+.pos-card.short { border-left-color: var(–red); }
+.pos-header { display: flex; justify-content: space-between; align-items: center; }
+.pos-pair { font-weight: 700; font-size: 15px; }
+.pos-pnl { font-family: var(–mono); font-weight: 600; }
+.pos-details { font-family: var(–mono); font-size: 11px; color: var(–muted); margin-top: 6px; }
+
+/* ── MASTER SWITCH ── */
+.master-switch {
+background: linear-gradient(135deg, var(–s1), var(–s2));
+border: 1px solid var(–border);
+border-radius: 20px; padding: 20px;
+text-align: center; margin-bottom: 12px;
+}
+.master-btn {
+width: 72px; height: 72px; border-radius: 50%;
+border: 3px solid var(–border2);
+background: var(–s3); cursor: pointer;
+display: flex; align-items: center; justify-content: center;
+margin: 12px auto;
+font-size: 28px;
+transition: all 0.3s;
+}
+.master-btn.on {
+border-color: var(–green);
+background: rgba(0,229,160,0.1);
+box-shadow: 0 0 30px rgba(0,229,160,0.2);
+}
+.master-btn.off { border-color: var(–red); background: rgba(255,69,96,0.1); }
+.master-label { font-family: var(–mono); font-size: 12px; color: var(–muted); }
+.master-label.on { color: var(–green); }
+
+/* ── SAVE TOAST ── */
+.toast {
+position: fixed; bottom: 100px; left: 50%; transform: translateX(-50%) translateY(20px);
+background: var(–green); color: #000;
+padding: 10px 24px; border-radius: 100px;
+font-weight: 700; font-size: 13px;
+opacity: 0; transition: all 0.3s; pointer-events: none; z-index: 999;
+}
+.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+/* ── BOTTOM NAV ── */
+.bottom-nav {
+position: fixed; bottom: 0; left: 0; right: 0;
+background: rgba(7,8,13,0.95); backdrop-filter: blur(20px);
+border-top: 1px solid var(–border);
+display: flex; z-index: 100;
+max-width: 480px; margin: 0 auto;
+}
+.nav-btn {
+flex: 1; padding: 12px 4px 14px;
+background: none; border: none; cursor: pointer;
+display: flex; flex-direction: column;
+align-items: center; gap: 4px;
+color: var(–muted); font-size: 10px;
+font-family: var(–sans); transition: color 0.2s;
+}
+.nav-btn.active { color: var(–green); }
+.nav-btn .icon { font-size: 20px; }
+
+/* Alpha Vantage section */
+.av-connected {
+display: flex; align-items: center; gap: 8px;
+padding: 10px 12px;
+background: rgba(0,229,160,0.05);
+border: 1px solid rgba(0,229,160,0.2);
+border-radius: 10px; margin-bottom: 12px;
+font-size: 12px; color: var(–green);
+font-family: var(–mono);
+}
+
+/* Loading spinner */
+.spin {
+display: inline-block; width: 14px; height: 14px;
+border: 2px solid var(–border2); border-top-color: var(–green);
+border-radius: 50%; animation: spin 0.8s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* Fade in */
+@keyframes fadeUp {
+from { opacity:0; transform: translateY(12px); }
+to   { opacity:1; transform: translateY(0); }
+}
+.card, .toggle-wrap, .news-card {
+animation: fadeUp 0.4s ease both;
+}
+</style>
+
+</head>
+<body>
+<div class="app">
+
+  <header>
+    <div class="logo">BOT <span>ULTRA</span> v4</div>
+    <div class="bot-status">
+      <div class="status-dot" id="headerDot"></div>
+      <span id="headerStatus" style="font-family:var(--mono);font-size:11px">CARREGANDO</span>
+    </div>
+  </header>
+
+  <div class="tabs">
+    <button class="tab active" onclick="showTab('dashboard',this)">📊 Dashboard</button>
+    <button class="tab" onclick="showTab('pares',this)">🔄 Pares</button>
+    <button class="tab" onclick="showTab('noticias',this)">📰 Notícias</button>
+    <button class="tab" onclick="showTab('admin',this)">⚙️ Admin</button>
+  </div>
+
+  <!-- ══ DASHBOARD ══ -->
+
+  <div class="section active" id="tab-dashboard">
+
+```
+<div class="master-switch">
+  <div style="font-size:12px;color:var(--muted);font-family:var(--mono)">CONTROLE DO BOT</div>
+  <div class="master-btn on" id="masterBtn" onclick="toggleBot()">⚡</div>
+  <div class="master-label on" id="masterLabel">OPERANDO</div>
+</div>
+
+<div class="stat-grid">
+  <div class="stat">
+    <div class="stat-label">Capital</div>
+    <div class="stat-val green" id="capital">$100.00</div>
+    <div class="stat-sub" id="capitalRet">+0.00%</div>
+  </div>
+  <div class="stat">
+    <div class="stat-label">P&L Total</div>
+    <div class="stat-val" id="pnl">$0.00</div>
+    <div class="stat-sub" id="trades">0 trades</div>
+  </div>
+  <div class="stat">
+    <div class="stat-label">Winrate</div>
+    <div class="stat-val blue" id="winrate">--%</div>
+    <div class="stat-sub" id="wl">W/L: 0/0</div>
+  </div>
+  <div class="stat">
+    <div class="stat-label">Sentimento</div>
+    <div class="stat-val amber" id="fgVal">--</div>
+    <div class="stat-sub" id="fgLabel">Fear & Greed</div>
+  </div>
+</div>
+
+<div class="card">
+  <div class="card-title">Posições Abertas</div>
+  <div id="posicoes">
+    <div style="color:var(--muted);font-size:13px;text-align:center;padding:16px;font-family:var(--mono)">
+      Nenhuma posição aberta
+    </div>
+  </div>
+</div>
+
+<div class="card">
+  <div class="card-title">Log Recente</div>
+  <div class="log-box" id="logBox">
+    <div class="log-line"><span class="ts">--:--:--</span><span class="c-muted">Aguardando dados...</span></div>
+  </div>
+</div>
+```
+
+  </div>
+
+  <!-- ══ PARES ══ -->
+
+  <div class="section" id="tab-pares">
+
+```
+<div class="card">
+  <div class="card-title">Pares Ativos</div>
+  <div id="paresLista"></div>
+</div>
+
+<div class="card">
+  <div class="card-title">Multi-Timeframe</div>
+  <div id="mtfGrid" style="font-family:var(--mono);font-size:12px;color:var(--muted);text-align:center;padding:16px">
+    Aguardando análise...
+  </div>
+</div>
+```
+
+  </div>
+
+  <!-- ══ NOTÍCIAS ══ -->
+
+  <div class="section" id="tab-noticias">
+
+```
+<div class="card" style="padding:12px">
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
+    <div class="card-title" style="margin:0">Fonte</div>
+    <select id="newsFilter" onchange="filtrarNoticias()" style="background:var(--s2);border:1px solid var(--border);color:var(--text);padding:4px 10px;border-radius:8px;font-family:var(--mono);font-size:11px;outline:none">
+      <option value="all">Todas</option>
+      <option value="bull">🟢 Positivas</option>
+      <option value="bear">🔴 Negativas</option>
+    </select>
+  </div>
+  <div id="avStatus" style="font-family:var(--mono);font-size:11px;color:var(--muted)">
+    Configure a API Alpha Vantage em Admin →
+  </div>
+</div>
+
+<div id="newsLista">
+  <div style="text-align:center;padding:40px;color:var(--muted);font-size:13px">
+    Nenhuma notícia carregada.<br>Configure sua API Key em Admin.
+  </div>
+</div>
+```
+
+  </div>
+
+  <!-- ══ ADMIN ══ -->
+
+  <div class="section" id="tab-admin">
+
+```
+<!-- Binance API -->
+<div class="card">
+  <div class="card-title">🔑 Binance API</div>
+  <div class="input-group">
+    <label class="input-label">API KEY</label>
+    <input class="input-field" id="binanceKey" placeholder="Cole sua API Key aqui" />
+  </div>
+  <div class="input-group">
+    <label class="input-label">API SECRET</label>
+    <input class="input-field password" id="binanceSecret" type="password" placeholder="••••••••••••••••" />
+  </div>
+  <div style="display:flex;gap:8px;margin-bottom:12px">
+    <label style="display:flex;align-items:center;gap:6px;font-size:13px;cursor:pointer">
+      <input type="checkbox" id="testnetCheck" style="accent-color:var(--amber)" checked>
+      <span style="color:var(--amber);font-family:var(--mono);font-size:12px">TESTNET</span>
+    </label>
+  </div>
+  <button class="btn btn-primary" onclick="salvarBinance()">Salvar Configuração Binance</button>
+</div>
+
+<!-- Alpha Vantage API -->
+<div class="card">
+  <div class="card-title">📰 Alpha Vantage API</div>
+  <div class="input-group">
+    <label class="input-label">API KEY</label>
+    <input class="input-field" id="alphaKey" placeholder="Cole sua Alpha Vantage Key" />
+  </div>
+  <button class="btn btn-secondary" style="margin-bottom:8px" onclick="salvarAlpha()">Conectar Alpha Vantage</button>
+  <div style="font-size:11px;color:var(--muted);font-family:var(--mono)">
+    Grátis em: alphavantage.co/support/#api-key
+  </div>
+</div>
+
+<!-- Capital e Risco -->
+<div class="card">
+  <div class="card-title">💰 Capital e Risco</div>
+  <div class="input-row">
+    <div class="input-group">
+      <label class="input-label">Capital (USDT)</label>
+      <input class="input-field" id="capitalInput" type="number" value="100" />
+    </div>
+    <div class="input-group">
+      <label class="input-label">Stop Loss ($)</label>
+      <input class="input-field" id="stopInput" type="number" value="10" />
+    </div>
+  </div>
+  <div class="input-row">
+    <div class="input-group">
+      <label class="input-label">Take Profit ($)</label>
+      <input class="input-field" id="tpInput" type="number" value="20" />
+    </div>
+    <div class="input-group">
+      <label class="input-label">Max Posições</label>
+      <input class="input-field" id="maxPosInput" type="number" value="2" />
+    </div>
+  </div>
+  <button class="btn btn-primary" onclick="salvarCapital()">Salvar Parâmetros</button>
+</div>
+
+<!-- Danger Zone -->
+<div class="card" style="border-color:rgba(255,69,96,0.2)">
+  <div class="card-title" style="color:var(--red)">⚠️ Zona de Perigo</div>
+  <button class="btn btn-danger" onclick="resetarBot()">Resetar Memória do Bot</button>
+</div>
+```
+
+  </div>
+
+</div>
+
+<!-- Toast -->
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ══ STATE ══
+const STATE = {
+  botOn: true,
+  capital: 100,
+  capitalInicial: 100,
+  trades: 0, wins: 0, losses: 0,
+  lucro: 0,
+  fg: 50, fgLabel: 'Neutro',
+  nlpScore: 0,
+  posicoes: {},
+  logs: [],
+  pares: {
+    BTCUSDT: { on: true, price: 0, score: 0, icon: '₿' },
+    ETHUSDT: { on: true, price: 0, score: 0, icon: 'Ξ' },
+    BNBUSDT: { on: false, price: 0, score: 0, icon: '◈' },
+    SOLUSDT: { on: false, price: 0, score: 0, icon: '◎' },
+    ADAUSDT: { on: false, price: 0, score: 0, icon: '₳' },
+  },
+  noticias: [],
+  alphaKey: localStorage.getItem('alphaKey') || '',
+  binanceKey: localStorage.getItem('binanceKey') || '',
+  testnet: true,
+};
+
+// ══ TABS ══
+function showTab(id, btn) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('tab-' + id).classList.add('active');
+  btn.classList.add('active');
+  if (id === 'noticias') carregarNoticias();
+  if (id === 'pares') renderPares();
+}
+
+// ══ TOGGLE BOT ══
+function toggleBot() {
+  STATE.botOn = !STATE.botOn;
+  const btn = document.getElementById('masterBtn');
+  const lbl = document.getElementById('masterLabel');
+  const dot = document.getElementById('headerDot');
+  const hdr = document.getElementById('headerStatus');
+  if (STATE.botOn) {
+    btn.className = 'master-btn on'; btn.textContent = '⚡';
+    lbl.className = 'master-label on'; lbl.textContent = 'OPERANDO';
+    dot.className = 'status-dot'; hdr.textContent = 'ATIVO';
+    addLog('Bot LIGADO pelo painel', 'green');
+  } else {
+    btn.className = 'master-btn off'; btn.textContent = '⏹';
+    lbl.className = 'master-label'; lbl.textContent = 'PAUSADO';
+    dot.className = 'status-dot off'; hdr.textContent = 'PAUSADO';
+    addLog('Bot DESLIGADO pelo painel', 'red');
+  }
+  // Envia ao backend
+  fetch('/api/bot-control', {
+    method: 'POST',
+    headers: {'Content-Type':'application/json'},
+    body: JSON.stringify({ativo: STATE.botOn})
+  }).catch(() => {});
+}
+
+// ══ PARES ══
+function renderPares() {
+  const lista = document.getElementById('paresLista');
+  lista.innerHTML = '';
+  for (const [par, info] of Object.entries(STATE.pares)) {
+    const scoreClass = info.score >= 5 ? 'bull' : info.score <= -5 ? 'bear' : 'neut';
+    const scoreLabel = info.score >= 5 ? '▲ COMPRA' : info.score <= -5 ? '▼ VENDA' : '— NEUTRO';
+    const div = document.createElement('div');
+    div.className = 'toggle-wrap' + (info.on ? ' active-pair' : '');
+    div.innerHTML = `
+      <div class="toggle-left">
+        <div class="pair-icon">${info.icon}</div>
+        <div>
+          <div class="pair-name">${par.replace('USDT','')}/USDT</div>
+          <div class="pair-price">$${info.price.toLocaleString('en-US', {minimumFractionDigits:2,maximumFractionDigits:2}) || '--'}</div>
+          <div class="pair-score ${scoreClass}">${scoreLabel}</div>
+        </div>
+      </div>
+      <div class="toggle ${info.on ? 'on' : ''}" onclick="togglePar('${par}',this)"></div>
+    `;
+    lista.appendChild(div);
+  }
+}
+
+function togglePar(par, el) {
+  STATE.pares[par].on = !STATE.pares[par].on;
+  el.classList.toggle('on');
+  el.closest('.toggle-wrap').classList.toggle('active-pair');
+  addLog(`Par ${par} ${STATE.pares[par].on ? 'ativado' : 'desativado'}`, STATE.pares[par].on ? 'green' : 'amber');
+  fetch('/api/pares', {
+    method: 'POST',
+    headers: {'Content-Type':'application/json'},
+    body: JSON.stringify({pares: Object.entries(STATE.pares).filter(([,v])=>v.on).map(([k])=>k)})
+  }).catch(()=>{});
+  showToast(par + (STATE.pares[par].on ? ' ativado ✓' : ' desativado'));
+}
+
+// ══ PREÇOS ══
+async function atualizarPrecos() {
+  const pares = Object.keys(STATE.pares);
+  for (const par of pares) {
+    try {
+      const r = await fetch(`https://api.binance.com/api/v3/ticker/price?symbol=${par}`);
+      const d = await r.json();
+      STATE.pares[par].price = parseFloat(d.price);
+    } catch(e) {}
+  }
+  renderPares();
+}
+
+// ══ FEAR & GREED ══
+async function atualizarFG() {
+  try {
+    const r = await fetch('https://api.alternative.me/fng/?limit=1');
+    const d = await r.json();
+    STATE.fg = parseInt(d.data[0].value);
+    STATE.fgLabel = d.data[0].value_classification;
+    document.getElementById('fgVal').textContent = STATE.fg;
+    document.getElementById('fgLabel').textContent = STATE.fgLabel;
+    const color = STATE.fg <= 30 ? 'red' : STATE.fg >= 70 ? 'green' : 'amber';
+    document.getElementById('fgVal').className = 'stat-val ' + color;
+  } catch(e) {}
+}
+
+// ══ NOTICIAS — ALPHA VANTAGE ══
+async function carregarNoticias() {
+  const key = localStorage.getItem('alphaKey');
+  const newsDiv = document.getElementById('newsLista');
+  const avStatus = document.getElementById('avStatus');
+
+  if (!key) {
+    avStatus.textContent = '⚠️ Configure a API Key em Admin →';
+    avStatus.style.color = 'var(--amber)';
+    return;
+  }
+
+  avStatus.innerHTML = '<span class="spin"></span> Buscando notícias...';
+  avStatus.style.color = 'var(--muted)';
+
+  try {
+    const url = `https://www.alphavantage.co/query?function=NEWS_SENTIMENT&tickers=CRYPTO:BTC,CRYPTO:ETH&apikey=${key}&limit=10`;
+    const r = await fetch(url);
+    const d = await r.json();
+
+    if (d.Information) {
+      avStatus.textContent = '⚠️ Limite da API atingido — tente em 1 minuto';
+      avStatus.style.color = 'var(--amber)';
+      return;
+    }
+
+    if (!d.feed || d.feed.length === 0) {
+      avStatus.textContent = '⚠️ Nenhuma notícia encontrada';
+      return;
+    }
+
+    STATE.noticias = d.feed;
+    avStatus.innerHTML = '<span style="color:var(--green)">✓ Alpha Vantage conectada</span> · ' + d.feed.length + ' notícias';
+    renderNoticias(d.feed);
+
+  } catch(e) {
+    avStatus.textContent = '❌ Erro ao conectar Alpha Vantage';
+    avStatus.style.color = 'var(--red)';
+  }
+}
+
+function renderNoticias(feed) {
+  const filtro = document.getElementById('newsFilter').value;
+  const lista = document.getElementById('newsLista');
+  lista.innerHTML = '';
+
+  const filtrado = feed.filter(n => {
+    const score = parseFloat(n.overall_sentiment_score || 0);
+    if (filtro === 'bull') return score > 0.15;
+    if (filtro === 'bear') return score < -0.15;
+    return true;
+  });
+
+  if (filtrado.length === 0) {
+    lista.innerHTML = '<div style="text-align:center;padding:30px;color:var(--muted);font-size:13px">Nenhuma notícia nesse filtro</div>';
+    return;
+  }
+
+  filtrado.slice(0, 8).forEach((n, i) => {
+    const score = parseFloat(n.overall_sentiment_score || 0);
+    const scoreLabel = n.overall_sentiment_label || 'Neutral';
+    const isBull = score > 0.15;
+    const isBear = score < -0.15;
+    const cls = isBull ? 'bull' : isBear ? 'bear' : 'neut';
+    const emoji = isBull ? '📈' : isBear ? '📉' : '➡️';
+    const scoreText = (score > 0 ? '+' : '') + (score * 100).toFixed(0) + '%';
+
+    const tempo = n.time_published ? n.time_published.substring(9,13).replace(/(\d{2})(\d{2})/, '$1:$2') : '--';
+    const fonte = n.source || 'Desconhecido';
+    const titulo = n.title || 'Sem título';
+
+    const card = document.createElement('div');
+    card.className = 'news-card';
+    card.dataset.cls = cls;
+    card.innerHTML = `
+      <div class="news-header">
+        <div class="news-sentiment ${cls}">${emoji}</div>
+        <div class="news-title">${titulo}</div>
+      </div>
+      <div class="news-meta">
+        <span class="news-source">${fonte}</span>
+        <span class="news-time">${tempo}</span>
+        <span class="news-score ${cls}">${scoreText}</span>
+      </div>
+      <div class="news-ai" id="ai-${i}"></div>
+      <button class="news-ai-btn" onclick="analisarIA(${i}, \`${titulo.replace(/`/g,"'")}\`)">
+        🤖 Analisar com IA
+      </button>
+    `;
+    lista.appendChild(card);
+  });
+}
+
+function filtrarNoticias() {
+  if (STATE.noticias.length > 0) renderNoticias(STATE.noticias);
+}
+
+async function analisarIA(idx, titulo) {
+  const aiDiv = document.getElementById('ai-' + idx);
+  aiDiv.innerHTML = '<span class="spin"></span> Analisando...';
+  aiDiv.classList.add('show');
+
+  try {
+    const resp = await fetch('/api/analisar-noticia', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({titulo})
+    });
+    const d = await resp.json();
+    aiDiv.textContent = d.analise || 'Sem resposta da IA.';
+  } catch(e) {
+    // Fallback offline: análise local simples
+    const pos = ['alta', 'bull', 'surge', 'rally', 'gain', 'adota', 'aprova'];
+    const neg = ['queda', 'bear', 'crash', 'ban', 'hack', 'fraude', 'perda'];
+    const t = titulo.toLowerCase();
+    const isPos = pos.some(w => t.includes(w));
+    const isNeg = neg.some(w => t.includes(w));
+    if (isPos) aiDiv.textContent = '📈 Notícia positiva para o mercado cripto. Pode indicar pressão compradora em BTC e ETH nos próximos candles.';
+    else if (isNeg) aiDiv.textContent = '📉 Notícia negativa para o mercado. Monitore suportes e considere reduzir exposição.';
+    else aiDiv.textContent = '➡️ Notícia neutra. Sem impacto claro no curto prazo. Mantenha estratégia técnica.';
+  }
+}
+
+// ══ ADMIN — SALVAR ══
+function salvarBinance() {
+  const key = document.getElementById('binanceKey').value.trim();
+  const secret = document.getElementById('binanceSecret').value.trim();
+  const testnet = document.getElementById('testnetCheck').checked;
+  if (!key || !secret) { showToast('Preencha as duas chaves!'); return; }
+  localStorage.setItem('binanceKey', key);
+  localStorage.setItem('binanceSecret', secret);
+  localStorage.setItem('testnet', testnet);
+  fetch('/api/config', {
+    method: 'POST',
+    headers: {'Content-Type':'application/json'},
+    body: JSON.stringify({binance_key: key, binance_secret: secret, testnet})
+  }).catch(()=>{});
+  showToast('✓ Binance configurada!');
+  addLog('Binance API configurada pelo painel', 'green');
+}
+
+function salvarAlpha() {
+  const key = document.getElementById('alphaKey').value.trim();
+  if (!key) { showToast('Cole sua API Key!'); return; }
+  localStorage.setItem('alphaKey', key);
+  showToast('✓ Alpha Vantage conectada!');
+  addLog('Alpha Vantage configurada', 'blue');
+}
+
+function salvarCapital() {
+  const capital = document.getElementById('capitalInput').value;
+  const stop    = document.getElementById('stopInput').value;
+  const tp      = document.getElementById('tpInput').value;
+  const maxPos  = document.getElementById('maxPosInput').value;
+  fetch('/api/config', {
+    method: 'POST',
+    headers: {'Content-Type':'application/json'},
+    body: JSON.stringify({capital, stop_loss: stop, take_profit: tp, max_posicoes: maxPos})
+  }).catch(()=>{});
+  showToast('✓ Parâmetros salvos!');
+  addLog(`Capital=$${capital} | Stop=$${stop} | TP=$${tp}`, 'amber');
+}
+
+function resetarBot() {
+  if (!confirm('Tem certeza? Isso apaga toda a memória de aprendizado do bot.')) return;
+  fetch('/api/reset', {method:'POST'}).catch(()=>{});
+  showToast('⚠️ Memória resetada');
+  addLog('Memória do bot resetada pelo admin', 'red');
+}
+
+// ══ LOG ══
+function addLog(msg, color='muted') {
+  const now = new Date().toLocaleTimeString('pt-BR');
+  STATE.logs.unshift({ts: now, msg, color});
+  if (STATE.logs.length > 50) STATE.logs.pop();
+  renderLog();
+}
+
+function renderLog() {
+  const box = document.getElementById('logBox');
+  box.innerHTML = STATE.logs.slice(0, 20).map(l =>
+    `<div class="log-line"><span class="ts">${l.ts}</span><span class="c-${l.color}">${l.msg}</span></div>`
+  ).join('');
+}
+
+// ══ STATS ══
+function renderStats() {
+  const ret = ((STATE.capital - STATE.capitalInicial) / STATE.capitalInicial * 100).toFixed(2);
+  document.getElementById('capital').textContent = '$' + STATE.capital.toFixed(2);
+  document.getElementById('capitalRet').textContent = (ret >= 0 ? '+' : '') + ret + '%';
+  document.getElementById('capital').className = 'stat-val ' + (STATE.capital >= STATE.capitalInicial ? 'green' : 'red');
+
+  const pnl = STATE.lucro;
+  document.getElementById('pnl').textContent = (pnl >= 0 ? '+$' : '-$') + Math.abs(pnl).toFixed(4);
+  document.getElementById('pnl').className = 'stat-val ' + (pnl >= 0 ? 'green' : 'red');
+  document.getElementById('trades').textContent = STATE.trades + ' trades';
+
+  const wr = STATE.trades > 0 ? (STATE.wins / STATE.trades * 100).toFixed(1) : '--';
+  document.getElementById('winrate').textContent = wr + '%';
+  document.getElementById('wl').textContent = 'W/L: ' + STATE.wins + '/' + STATE.losses;
+}
+
+// ══ FETCH ESTADO DO BACKEND ══
+async function atualizarEstado() {
+  try {
+    const r = await fetch('/api/estado');
+    const d = await r.json();
+    STATE.capital     = d.capital || STATE.capital;
+    STATE.trades      = d.trades  || 0;
+    STATE.wins        = d.wins    || 0;
+    STATE.losses      = d.losses  || 0;
+    STATE.lucro       = d.lucro_total || 0;
+    STATE.posicoes    = d.posicoes || {};
+
+    if (d.log_recente) {
+      STATE.logs = d.log_recente.slice().reverse().map(l => ({
+        ts: l.substring(0,8), msg: l.substring(22), color: 'muted'
+      }));
+      renderLog();
+    }
+
+    // Posições
+    const posDiv = document.getElementById('posicoes');
+    if (Object.keys(STATE.posicoes).length === 0) {
+      posDiv.innerHTML = '<div style="color:var(--muted);font-size:13px;text-align:center;padding:16px;font-family:var(--mono)">Nenhuma posição aberta</div>';
+    } else {
+      posDiv.innerHTML = Object.entries(STATE.posicoes).map(([par, p]) =>
+        `<div class="pos-card ${p.lado === 'VENDER' ? 'short' : ''}">
+          <div class="pos-header">
+            <span class="pos-pair">${par}</span>
+            <span class="pos-pnl" style="color:${p.lado==='COMPRAR'?'var(--green)':'var(--red)'}">${p.lado === 'COMPRAR' ? '↑ LONG' : '↓ SHORT'}</span>
+          </div>
+          <div class="pos-details">Entrada: $${p.entrada?.toLocaleString()} | Stop: $${p.stop} | Alvo: $${p.alvo}</div>
+        </div>`
+      ).join('');
+    }
+
+    renderStats();
+  } catch(e) {
+    // Backend offline — modo demo
+  }
+}
+
+// ══ TOAST ══
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2500);
+}
+
+// ══ INIT ══
+function init() {
+  // Restaurar valores salvos
+  if (localStorage.getItem('binanceKey'))
+    document.getElementById('binanceKey').value = localStorage.getItem('binanceKey');
+  if (localStorage.getItem('alphaKey'))
+    document.getElementById('alphaKey').value = localStorage.getItem('alphaKey');
+
+  renderPares();
+  renderStats();
+  addLog('Painel inicializado', 'green');
+  addLog('Aguardando conexão com bot...', 'muted');
+
+  atualizarFG();
+  atualizarPrecos();
+  atualizarEstado();
+
+  // Atualiza a cada 30s
+  setInterval(atualizarEstado, 30000);
+  setInterval(atualizarPrecos, 60000);
+  setInterval(atualizarFG, 300000);
+}
+
+init();
+</script>
+
+</body>
+</html>

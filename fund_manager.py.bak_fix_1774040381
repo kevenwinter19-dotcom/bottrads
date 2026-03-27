@@ -1,0 +1,46 @@
+import time, json
+from pathlib import Path
+
+OUT = Path("/tmp/fund_state.json")
+
+capital_file = Path("/tmp/capital_state.json")
+
+state = {
+    "win_streak": 0,
+    "loss_streak": 0,
+    "risk_percent": 0.05
+}
+
+def ajustar_risco():
+    if state["win_streak"] >= 3:
+        state["risk_percent"] = min(0.10, state["risk_percent"] + 0.01)
+    elif state["loss_streak"] >= 2:
+        state["risk_percent"] = max(0.02, state["risk_percent"] - 0.01)
+
+def calcular_valor(saldo):
+    valor = saldo * state["risk_percent"]
+    if valor < 10:
+        valor = 10
+    return round(valor, 2)
+
+while True:
+    try:
+        if capital_file.exists():
+            cap = json.loads(capital_file.read_text())
+            saldo = cap.get("saldo_usdt", 0)
+
+            ajustar_risco()
+            valor = calcular_valor(saldo)
+
+            OUT.write_text(json.dumps({
+                "saldo": saldo,
+                "valor_trade": valor,
+                "risk_percent": state["risk_percent"],
+                "win_streak": state["win_streak"],
+                "loss_streak": state["loss_streak"]
+            }, indent=2))
+
+    except Exception as e:
+        OUT.write_text(json.dumps({"erro": str(e)}, indent=2))
+
+    time.sleep(10)

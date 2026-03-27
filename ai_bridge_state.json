@@ -1,0 +1,52 @@
+{
+  "ai_last_decision": {
+    "acao": "VENDER",
+    "confianca": 0.95,
+    "estrategia": "contextual_multi_factor",
+    "motivo": "fallback score -3.110",
+    "provider": "local_fallback",
+    "model": "fallback"
+  },
+  "pairs": {
+    "BTCUSDT": {
+      "acao": "AGUARDAR",
+      "confianca": 0.95,
+      "estrategia": "contextual_multi_factor",
+      "motivo": "fallback score -1.844",
+      "provider": "local_fallback",
+      "model": "fallback"
+    },
+    "ETHUSDT": {
+      "acao": "AGUARDAR",
+      "confianca": 0.7416,
+      "estrategia": "contextual_multi_factor",
+      "motivo": "fallback score -0.742",
+      "provider": "local_fallback",
+      "model": "fallback"
+    },
+    "BNBUSDT": {
+      "acao": "AGUARDAR",
+      "confianca": 0.95,
+      "estrategia": "contextual_multi_factor",
+      "motivo": "fallback score -0.951",
+      "provider": "local_fallback",
+      "model": "fallback"
+    },
+    "SOLUSDT": {
+      "acao": "AGUARDAR",
+      "confianca": 0.95,
+      "estrategia": "contextual_multi_factor",
+      "motivo": "fallback score 2.608",
+      "provider": "local_fallback",
+      "model": "fallback"
+    },
+    "ADAUSDT": {
+      "acao": "VENDER",
+      "confianca": 0.95,
+      "estrategia": "contextual_multi_factor",
+      "motivo": "fallback score -3.110",
+      "provider": "local_fallback",
+      "model": "fallback"
+    }
+  }
+}
